@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<APIProxy revision="1" name="jobsite-conditions-v1">
+    <DisplayName>jobsite-conditions-v1</DisplayName>
+    <Description>Jobsite operating conditions for heavy equipment. Facade over the Open-Meteo forecast API with API key security, traffic management, input validation, response caching, normalized errors and an operating advisory.</Description>
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <TargetEndpoints>
+        <TargetEndpoint>open-meteo</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>

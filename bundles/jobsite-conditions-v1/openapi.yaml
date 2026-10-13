@@ -1,0 +1,171 @@
+openapi: 3.0.3
+info:
+  title: Jobsite Conditions API
+  version: 1.0.0
+  description: >
+    Current weather and multi-day forecast for a jobsite, with an operating advisory
+    for heavy equipment (lifting, traction, visibility, temperature). Backed by the
+    Open-Meteo forecast API. The advisory is illustrative; site safety procedures
+    and equipment manuals take precedence.
+servers:
+  - url: http://localhost:9001/jobsite-conditions/v1
+    description: Apigee Lite (test)
+security:
+  - apiKey: []
+tags:
+  - name: Conditions
+paths:
+  /conditions:
+    get:
+      tags: [Conditions]
+      operationId: getCurrentConditions
+      summary: Current conditions and operating advisory for a location
+      parameters:
+        - $ref: '#/components/parameters/Latitude'
+        - $ref: '#/components/parameters/Longitude'
+        - $ref: '#/components/parameters/CacheControl'
+      responses:
+        '200':
+          description: Current conditions
+          headers:
+            X-Cache:
+              $ref: '#/components/headers/XCache'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentConditions'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '502': { $ref: '#/components/responses/BadGateway' }
+  /forecast:
+    get:
+      tags: [Conditions]
+      operationId: getForecast
+      summary: Daily forecast with an advisory per day
+      parameters:
+        - $ref: '#/components/parameters/Latitude'
+        - $ref: '#/components/parameters/Longitude'
+        - name: days
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 7, default: 3 }
+        - $ref: '#/components/parameters/CacheControl'
+      responses:
+        '200':
+          description: Daily forecast
+          headers:
+            X-Cache:
+              $ref: '#/components/headers/XCache'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forecast'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '502': { $ref: '#/components/responses/BadGateway' }
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+  parameters:
+    Latitude:
+      name: lat
+      in: query
+      required: true
+      schema: { type: number, minimum: -90, maximum: 90 }
+      example: 40.6936
+    Longitude:
+      name: lon
+      in: query
+      required: true
+      schema: { type: number, minimum: -180, maximum: 180 }
+      example: -89.589
+    CacheControl:
+      name: Cache-Control
+      in: header
+      required: false
+      description: Send no-cache to bypass the 10-minute response cache
+      schema: { type: string, enum: [no-cache] }
+  headers:
+    XCache:
+      description: true when the response was served from the gateway cache
+      schema: { type: string, enum: ['true', 'false'] }
+  schemas:
+    Location:
+      type: object
+      required: [latitude, longitude]
+      properties:
+        latitude: { type: number }
+        longitude: { type: number }
+        elevationM: { type: number }
+        timezone: { type: string, example: America/Chicago }
+    Advisory:
+      type: object
+      required: [level, reasons]
+      properties:
+        level: { type: string, enum: [NORMAL, CAUTION, RESTRICTED] }
+        reasons:
+          type: array
+          items: { type: string }
+    CurrentConditions:
+      type: object
+      required: [location, observedAt, conditions, operatingAdvisory]
+      properties:
+        location: { $ref: '#/components/schemas/Location' }
+        observedAt: { type: string, example: '2026-10-12T21:45' }
+        conditions:
+          type: object
+          properties:
+            temperatureC: { type: number }
+            windSpeedKmh: { type: number }
+            windGustKmh: { type: number }
+            precipitationMm: { type: number }
+            weatherCode: { type: integer }
+            weather: { type: string, example: Partly cloudy }
+        operatingAdvisory: { $ref: '#/components/schemas/Advisory' }
+        source: { type: string }
+    Forecast:
+      type: object
+      required: [location, days]
+      properties:
+        location: { $ref: '#/components/schemas/Location' }
+        days:
+          type: array
+          items:
+            type: object
+            properties:
+              date: { type: string, format: date }
+              temperatureMaxC: { type: number }
+              temperatureMinC: { type: number }
+              windSpeedMaxKmh: { type: number }
+              windGustMaxKmh: { type: number }
+              precipitationMm: { type: number }
+              weather: { type: string }
+              operatingAdvisory: { $ref: '#/components/schemas/Advisory' }
+        source: { type: string }
+    Error:
+      type: object
+      required: [error, message, messageid]
+      properties:
+        error: { type: string, example: invalid_request }
+        message: { type: string }
+        messageid: { type: string, format: uuid }
+  responses:
+    BadRequest:
+      description: Invalid or missing query parameters
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Unauthorized:
+      description: Missing or invalid API key
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    TooManyRequests:
+      description: Spike arrest or product quota exceeded
+      headers:
+        Retry-After: { schema: { type: integer } }
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    BadGateway:
+      description: The weather provider is unavailable
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }

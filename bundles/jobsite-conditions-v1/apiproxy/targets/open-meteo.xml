@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TargetEndpoint name="open-meteo">
+    <Description>Open-Meteo forecast API through the open-meteo TargetServer (TLS on 443)</Description>
+    <FaultRules/>
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>KVM-GetJobsiteConfig</Name>
+            </Step>
+            <Step>
+                <Name>JS-BuildTargetRequest</Name>
+            </Step>
+        </Request>
+        <Response>
+            <Step>
+                <Name>JS-TransformResponse</Name>
+            </Step>
+        </Response>
+    </PreFlow>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response>
+            <Step>
+                <Name>RC-WeatherCache</Name>
+            </Step>
+        </Response>
+    </PostFlow>
+    <Flows/>
+    <HTTPTargetConnection>
+        <LoadBalancer>
+            <Server name="open-meteo"/>
+        </LoadBalancer>
+        <Path>/v1</Path>
+        <Properties>
+            <Property name="connect.timeout.millis">3000</Property>
+            <Property name="io.timeout.millis">5000</Property>
+        </Properties>
+    </HTTPTargetConnection>
+</TargetEndpoint>

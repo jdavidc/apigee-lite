@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ResponseCache async="false" continueOnError="false" enabled="true" name="RC-WeatherCache">
+    <DisplayName>RC-WeatherCache</DisplayName>
+    <CacheKey>
+        <Prefix>jobsite-conditions</Prefix>
+        <KeyFragment ref="proxy.pathsuffix"/>
+        <KeyFragment ref="jobsite.latitude"/>
+        <KeyFragment ref="jobsite.longitude"/>
+        <KeyFragment ref="jobsite.forecastDays"/>
+    </CacheKey>
+    <Scope>Exclusive</Scope>
+    <ExpirySettings>
+        <TimeoutInSec>600</TimeoutInSec>
+    </ExpirySettings>
+    <ExcludeErrorResponse>true</ExcludeErrorResponse>
+    <SkipCacheLookup>request.header.Cache-Control = "no-cache"</SkipCacheLookup>
+</ResponseCache>

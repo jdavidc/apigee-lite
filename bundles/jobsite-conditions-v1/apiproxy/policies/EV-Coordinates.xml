@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ExtractVariables async="false" continueOnError="false" enabled="true" name="EV-Coordinates">
+    <DisplayName>EV-Coordinates</DisplayName>
+    <Source clearPayload="false">request</Source>
+    <QueryParam name="lat">
+        <Pattern>{lat}</Pattern>
+    </QueryParam>
+    <QueryParam name="lon">
+        <Pattern>{lon}</Pattern>
+    </QueryParam>
+    <QueryParam name="days">
+        <Pattern>{days}</Pattern>
+    </QueryParam>
+    <VariablePrefix>jobsite</VariablePrefix>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</ExtractVariables>
