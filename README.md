@@ -98,6 +98,31 @@ Single-port platforms (Render, Heroku, Cloud Run) are not supported as-is, becau
 - KVMs `orders-config` and `orders-secrets` (encrypted) in both environments.
 - TargetServer `mock-backend` in both environments.
 
+## Example proxy: jobsite-conditions-v1
+
+`bundles/jobsite-conditions-v1/` is a production-style proxy over an external API (Open-Meteo forecast, HTTPS). It returns jobsite weather and an operating advisory for heavy equipment (`NORMAL`, `CAUTION`, `RESTRICTED`). The thresholds are illustrative.
+
+It is not part of the seed. Install it into a running Apigee Lite (idempotent; run it again after `npm run seed`):
+
+```bash
+node scripts/install-jobsite-conditions.js        # deploys to test; pass "prod" to deploy there
+curl -H "x-api-key: practice-key-123" "http://localhost:9001/jobsite-conditions/v1/conditions?lat=40.69&lon=-89.59"
+curl -H "x-api-key: practice-key-123" "http://localhost:9001/jobsite-conditions/v1/forecast?lat=32.81&lon=-96.95&days=3"
+```
+
+The script creates the `open-meteo` TargetServer (port 443, TLS), the `jobsite-config` KVM, and the `jobsite-conditions-product` API product. It also subscribes `practice-app` to that product.
+
+Practices it demonstrates:
+
+- **Security:** API key in a header, removed before the backend call.
+- **Traffic:** a global SpikeArrest before authentication, and a per-app Quota taken from the product.
+- **Validation:** input validated with ExtractVariables + JavaScript + RaiseFault (400).
+- **Backend request:** built from an allow-list of fields.
+- **Configuration:** thresholds read from a KVM, with defaults.
+- **Caching:** ResponseCache with normalized cache keys and a `Cache-Control: no-cache` bypass.
+- **Errors:** FaultRules that return one JSON error format for 401, 429 and 502, CORS on every error through DefaultFaultRule `AlwaysEnforce`, 404/405 catch-all flows, and OPTIONS preflight with a null route.
+- **Logging and spec:** MessageLogging in the PostClientFlow, and an OpenAPI 3.0 contract in `openapi.yaml`.
+
 ## Sample curl
 
 ```bash
@@ -228,4 +253,6 @@ src/seed.js, seed-content.js seed org and bundles
 src/mock/mock-backend.js     mock backend
 public/                      vanilla JS UI (no build step) and policy-templates/*.xml
 test/                        node:test suites
+bundles/                     example proxy bundles kept outside the seed (jobsite-conditions-v1)
+scripts/                     install scripts for the example bundles
 ```

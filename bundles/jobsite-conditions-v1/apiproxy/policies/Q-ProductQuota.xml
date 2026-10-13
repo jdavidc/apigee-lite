@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Quota async="false" continueOnError="false" enabled="true" name="Q-ProductQuota" type="calendar">
+    <DisplayName>Q-ProductQuota</DisplayName>
+    <Identifier ref="verifyapikey.VA-VerifyKey.client_id"/>
+    <Allow count="60" countRef="verifyapikey.VA-VerifyKey.apiproduct.developer.quota.limit"/>
+    <Interval ref="verifyapikey.VA-VerifyKey.apiproduct.developer.quota.interval">1</Interval>
+    <TimeUnit ref="verifyapikey.VA-VerifyKey.apiproduct.developer.quota.timeunit">minute</TimeUnit>
+    <Distributed>true</Distributed>
+    <Synchronous>true</Synchronous>
+    <StartTime>2026-01-01 00:00:00</StartTime>
+</Quota>

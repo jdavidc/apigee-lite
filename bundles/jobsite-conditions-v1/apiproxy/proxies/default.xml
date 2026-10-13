@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ProxyEndpoint name="default">
+    <Description>Client-facing endpoint: security, traffic management, validation and caching</Description>
+    <FaultRules>
+        <FaultRule name="unauthorized">
+            <Step>
+                <Name>AM-Unauthorized</Name>
+            </Step>
+            <Condition>(fault.name = "FailedToResolveAPIKey") or (fault.name = "InvalidApiKey") or (fault.name = "ApiKeyNotApproved") or (fault.name = "InvalidApiKeyForGivenResource")</Condition>
+        </FaultRule>
+        <FaultRule name="rate-limited">
+            <Step>
+                <Name>AM-TooManyRequests</Name>
+            </Step>
+            <Condition>(fault.name = "SpikeArrestViolation") or (fault.name = "QuotaViolation")</Condition>
+        </FaultRule>
+        <FaultRule name="backend-unavailable">
+            <Step>
+                <Name>AM-BackendError</Name>
+            </Step>
+            <Condition>(fault.name = "ErrorResponseCode") or (fault.name = "ServiceUnavailable") or (fault.name = "GatewayTimeout") or (fault.name = "NoActiveTargets")</Condition>
+        </FaultRule>
+    </FaultRules>
+    <DefaultFaultRule name="default-fault">
+        <Step>
+            <Name>AM-ResponseHeaders</Name>
+        </Step>
+        <AlwaysEnforce>true</AlwaysEnforce>
+    </DefaultFaultRule>
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>SA-GlobalProtection</Name>
+            </Step>
+            <Step>
+                <Name>VA-VerifyKey</Name>
+                <Condition>request.verb != "OPTIONS"</Condition>
+            </Step>
+            <Step>
+                <Name>Q-ProductQuota</Name>
+                <Condition>request.verb != "OPTIONS"</Condition>
+            </Step>
+            <Step>
+                <Name>AM-RemoveApiKey</Name>
+            </Step>
+        </Request>
+        <Response/>
+    </PreFlow>
+    <Flows>
+        <Flow name="corsPreflight">
+            <Description>OPTIONS preflight, answered by the proxy without calling the backend</Description>
+            <Request/>
+            <Response/>
+            <Condition>request.verb = "OPTIONS"</Condition>
+        </Flow>
+        <Flow name="getConditions">
+            <Description>GET /conditions?lat={lat}&amp;lon={lon}</Description>
+            <Request>
+                <Step>
+                    <Name>EV-Coordinates</Name>
+                </Step>
+                <Step>
+                    <Name>JS-ValidateInput</Name>
+                </Step>
+                <Step>
+                    <Name>RF-BadRequest</Name>
+                    <Condition>jobsite.validation.error != null</Condition>
+                </Step>
+                <Step>
+                    <Name>RC-WeatherCache</Name>
+                </Step>
+            </Request>
+            <Response/>
+            <Condition>(proxy.pathsuffix MatchesPath "/conditions") and (request.verb = "GET")</Condition>
+        </Flow>
+        <Flow name="getForecast">
+            <Description>GET /forecast?lat={lat}&amp;lon={lon}&amp;days={1-7}</Description>
+            <Request>
+                <Step>
+                    <Name>EV-Coordinates</Name>
+                </Step>
+                <Step>
+                    <Name>JS-ValidateInput</Name>
+                </Step>
+                <Step>
+                    <Name>RF-BadRequest</Name>
+                    <Condition>jobsite.validation.error != null</Condition>
+                </Step>
+                <Step>
+                    <Name>RC-WeatherCache</Name>
+                </Step>
+            </Request>
+            <Response/>
+            <Condition>(proxy.pathsuffix MatchesPath "/forecast") and (request.verb = "GET")</Condition>
+        </Flow>
+        <Flow name="methodNotAllowed">
+            <Description>Known resource, unsupported verb</Description>
+            <Request>
+                <Step>
+                    <Name>RF-MethodNotAllowed</Name>
+                </Step>
+            </Request>
+            <Response/>
+            <Condition>(proxy.pathsuffix MatchesPath "/conditions") or (proxy.pathsuffix MatchesPath "/forecast")</Condition>
+        </Flow>
+        <Flow name="notFound">
+            <Description>Catch-all for unknown resources</Description>
+            <Request>
+                <Step>
+                    <Name>RF-NotFound</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+    </Flows>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response>
+            <Step>
+                <Name>AM-ResponseHeaders</Name>
+            </Step>
+        </Response>
+    </PostFlow>
+    <PostClientFlow name="PostClientFlow">
+        <Response>
+            <Step>
+                <Name>ML-AccessLog</Name>
+            </Step>
+        </Response>
+    </PostClientFlow>
+    <HTTPProxyConnection>
+        <BasePath>/jobsite-conditions/v1</BasePath>
+        <Properties/>
+        <VirtualHost>secure</VirtualHost>
+        <VirtualHost>default</VirtualHost>
+    </HTTPProxyConnection>
+    <RouteRule name="noRoute">
+        <Condition>request.verb = "OPTIONS"</Condition>
+    </RouteRule>
+    <RouteRule name="default">
+        <TargetEndpoint>open-meteo</TargetEndpoint>
+    </RouteRule>
+</ProxyEndpoint>

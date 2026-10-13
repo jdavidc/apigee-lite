@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-ResponseHeaders">
+    <DisplayName>AM-ResponseHeaders</DisplayName>
+    <Remove>
+        <Headers>
+            <Header name="Server"/>
+            <Header name="X-Powered-By"/>
+        </Headers>
+    </Remove>
+    <Set>
+        <Headers>
+            <Header name="Access-Control-Allow-Origin">*</Header>
+            <Header name="Access-Control-Allow-Headers">origin, accept, content-type, x-api-key, cache-control</Header>
+            <Header name="Access-Control-Allow-Methods">GET, OPTIONS</Header>
+            <Header name="Access-Control-Max-Age">3600</Header>
+            <Header name="X-Content-Type-Options">nosniff</Header>
+            <Header name="X-Request-Id">{messageid}</Header>
+            <Header name="X-Cache">{responsecache.RC-WeatherCache.cachehit}</Header>
+        </Headers>
+    </Set>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http" type="response"/>
+</AssignMessage>

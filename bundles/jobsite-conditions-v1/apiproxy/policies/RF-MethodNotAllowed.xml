@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RaiseFault async="false" continueOnError="false" enabled="true" name="RF-MethodNotAllowed">
+    <DisplayName>RF-MethodNotAllowed</DisplayName>
+    <FaultResponse>
+        <Set>
+            <Headers>
+                <Header name="Allow">GET, OPTIONS</Header>
+            </Headers>
+            <Payload contentType="application/json">{"error":"method_not_allowed","message":"Method {request.verb} is not allowed on {proxy.pathsuffix}","messageid":"{messageid}"}</Payload>
+            <StatusCode>405</StatusCode>
+            <ReasonPhrase>Method Not Allowed</ReasonPhrase>
+        </Set>
+    </FaultResponse>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</RaiseFault>

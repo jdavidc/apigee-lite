@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Javascript async="false" continueOnError="false" enabled="true" timeLimit="500" name="JS-TransformResponse">
+    <DisplayName>JS-TransformResponse</DisplayName>
+    <ResourceURL>jsc://transformResponse.js</ResourceURL>
+</Javascript>

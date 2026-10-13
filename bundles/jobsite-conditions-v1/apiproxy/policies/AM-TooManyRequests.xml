@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-TooManyRequests">
+    <DisplayName>AM-TooManyRequests</DisplayName>
+    <Set>
+        <Headers>
+            <Header name="Retry-After">60</Header>
+        </Headers>
+        <Payload contentType="application/json">{"error":"too_many_requests","message":"Request rate or quota exceeded","messageid":"{messageid}"}</Payload>
+        <StatusCode>429</StatusCode>
+        <ReasonPhrase>Too Many Requests</ReasonPhrase>
+    </Set>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http" type="response"/>
+</AssignMessage>

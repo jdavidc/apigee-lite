@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MessageLogging async="false" continueOnError="true" enabled="true" name="ML-AccessLog">
+    <DisplayName>ML-AccessLog</DisplayName>
+    <Syslog>
+        <Message>[jobsite-conditions-v1] messageid={messageid} app={developer.app.name} {request.verb} {proxy.pathsuffix} status={response.status.code} cache={responsecache.RC-WeatherCache.cachehit} fault={fault.name}</Message>
+    </Syslog>
+</MessageLogging>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<KeyValueMapOperations async="false" continueOnError="false" enabled="true" name="KVM-GetJobsiteConfig" mapIdentifier="jobsite-config">
+    <DisplayName>KVM-GetJobsiteConfig</DisplayName>
+    <Scope>environment</Scope>
+    <ExpiryTimeInSecs>300</ExpiryTimeInSecs>
+    <Get assignTo="jobsite.config.thresholds">
+        <Key>
+            <Parameter>advisory-thresholds</Parameter>
+        </Key>
+    </Get>
+</KeyValueMapOperations>
