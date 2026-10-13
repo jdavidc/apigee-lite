@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<KeyValueMapOperations async="false" continueOnError="false" enabled="true" name="NAME" mapIdentifier="FooKVM">
+    <DisplayName>NAME</DisplayName>
+    <Properties/>
+    <ExclusiveCache>false</ExclusiveCache>
+    <ExpiryTimeInSecs>300</ExpiryTimeInSecs>
+    <InitialEntries>
+        <Entry>
+            <Key>
+                <Parameter>k1</Parameter>
+            </Key>
+            <Value>v1</Value>
+        </Entry>
+    </InitialEntries>
+    <Put>
+        <Key>
+            <Parameter>FooKey_1</Parameter>
+        </Key>
+        <Value>value_one</Value>
+    </Put>
+    <Get assignTo="foo_variable" index="1">
+        <Key>
+            <Parameter>FooKey_1</Parameter>
+        </Key>
+    </Get>
+    <Scope>environment</Scope>
+</KeyValueMapOperations>

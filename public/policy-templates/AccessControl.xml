@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AccessControl async="false" continueOnError="false" enabled="true" name="NAME">
+    <DisplayName>NAME</DisplayName>
+    <IPRules noRuleMatchAction="ALLOW">
+        <MatchRule action="DENY">
+            <SourceAddress mask="32">10.10.10.10</SourceAddress>
+        </MatchRule>
+    </IPRules>
+</AccessControl>

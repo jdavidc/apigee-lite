@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<JSONToXML async="false" continueOnError="false" enabled="true" name="NAME">
+    <DisplayName>NAME</DisplayName>
+    <Properties/>
+    <Options>
+        <NullValue>NULL</NullValue>
+        <ObjectRootElementName>Root</ObjectRootElementName>
+        <ArrayRootElementName>Array</ArrayRootElementName>
+        <ArrayItemElementName>Item</ArrayItemElementName>
+    </Options>
+    <OutputVariable>request</OutputVariable>
+    <Source>request</Source>
+</JSONToXML>

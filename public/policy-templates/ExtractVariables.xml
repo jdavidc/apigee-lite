@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ExtractVariables async="false" continueOnError="false" enabled="true" name="NAME">
+    <DisplayName>NAME</DisplayName>
+    <Properties/>
+    <URIPath>
+        <Pattern ignoreCase="true">/accounts/{id}</Pattern>
+    </URIPath>
+    <QueryParam name="code">
+        <Pattern ignoreCase="true">DBN{dbncode}</Pattern>
+    </QueryParam>
+    <Header name="Authorization">
+        <Pattern ignoreCase="false">Bearer {oauthtoken}</Pattern>
+    </Header>
+    <FormParam name="greeting">
+        <Pattern>hello {user}</Pattern>
+    </FormParam>
+    <Variable name="request.content">
+        <Pattern>hello {user}</Pattern>
+    </Variable>
+    <JSONPayload>
+        <Variable name="name" type="string">
+            <JSONPath>{example}</JSONPath>
+        </Variable>
+    </JSONPayload>
+    <Source clearPayload="false">request</Source>
+    <VariablePrefix>apigee</VariablePrefix>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</ExtractVariables>
